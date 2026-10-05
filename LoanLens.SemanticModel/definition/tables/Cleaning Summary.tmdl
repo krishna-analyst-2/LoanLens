@@ -1,0 +1,53 @@
+table 'Cleaning Summary'
+	lineageTag: 74057209-5763-4acc-8402-0f6a488cc59f
+
+	column Step
+		dataType: string
+		lineageTag: 34d1898e-e292-4464-a7e2-491d4e9c287e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Step]
+		sortByColumn: 'Step Order'
+
+	column 'Step Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6c6d4b03-1187-400e-9aa3-2b25be8ad3af
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Step Order]
+
+	column Customers
+		dataType: int64
+		formatString: #,0
+		lineageTag: 451a5c48-9a2a-48dd-a410-e9ad9319534e
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Customers]
+
+	column Loans
+		dataType: int64
+		formatString: #,0
+		lineageTag: 8c38a9ba-e151-4e03-94d9-35a1ddcd98e1
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Loans]
+
+	partition 'Cleaning Summary' = calculated
+		mode: import
+		source =
+				DATATABLE (
+				    "Step Order", INTEGER,
+				    "Step", STRING,
+				    "Customers", INTEGER,
+				    "Loans", INTEGER,
+				    {
+				        { 1, "Raw rows", 46228, 50000 },
+				        { 2, "Duplicate rows removed", 458, 250 },
+				        { 3, "Clean rows", 45770, 49750 },
+				        { 4, "Values imputed (median)", 687, 398 },
+				        { 5, "Impossible values blanked", 184, 100 }
+				    }
+				)
+

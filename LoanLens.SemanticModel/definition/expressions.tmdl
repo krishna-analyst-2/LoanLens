@@ -1,0 +1,9 @@
+expression DataFolder =
+		let
+		    Source = "C:\krishna\College\intership\euron_1\data\raw\" meta [IsParameterQuery = true, IsParameterQueryRequired = false, Type = type text]
+		in
+		    Source
+	lineageTag: b5b3f2a6-9d9d-4fb4-923a-d4630d61e4e0
+
+	annotation PBI_ResultType = Text
+

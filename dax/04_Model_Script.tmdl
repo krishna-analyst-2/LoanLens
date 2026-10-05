@@ -1,0 +1,321 @@
+createOrReplace
+
+	ref table Customers
+
+		column 'Age Group' =
+				SWITCH (
+				    TRUE (),
+				    ISBLANK ( Customers[Age] ), "Unknown",
+				    Customers[Age] < 26, "18-25",
+				    Customers[Age] < 36, "26-35",
+				    Customers[Age] < 46, "36-45",
+				    Customers[Age] < 56, "46-55",
+				    "56+"
+				)
+			sortByColumn: 'Age Group Order'
+
+		column 'Age Group Order' =
+				SWITCH (
+				    TRUE (),
+				    ISBLANK ( Customers[Age] ), 6,
+				    Customers[Age] < 26, 1,
+				    Customers[Age] < 36, 2,
+				    Customers[Age] < 46, 3,
+				    Customers[Age] < 56, 4,
+				    5
+				)
+			isHidden
+
+		column 'Income Band' =
+				SWITCH (
+				    TRUE (),
+				    Customers[Income] < 40000, "Under 40K",
+				    Customers[Income] < 70000, "40K-70K",
+				    Customers[Income] < 100000, "70K-100K",
+				    "100K+"
+				)
+			sortByColumn: 'Income Band Order'
+
+		column 'Income Band Order' =
+				SWITCH (
+				    TRUE (),
+				    Customers[Income] < 40000, 1,
+				    Customers[Income] < 70000, 2,
+				    Customers[Income] < 100000, 3,
+				    4
+				)
+			isHidden
+
+		column 'Credit Score Band' =
+				SWITCH (
+				    TRUE (),
+				    ISBLANK ( Customers[CreditScore] ), "Unknown",
+				    Customers[CreditScore] < 580, "Poor (300-579)",
+				    Customers[CreditScore] < 670, "Fair (580-669)",
+				    Customers[CreditScore] < 740, "Good (670-739)",
+				    Customers[CreditScore] < 800, "Very Good (740-799)",
+				    "Excellent (800-850)"
+				)
+			sortByColumn: 'Credit Score Band Order'
+
+		column 'Credit Score Band Order' =
+				SWITCH (
+				    TRUE (),
+				    ISBLANK ( Customers[CreditScore] ), 6,
+				    Customers[CreditScore] < 580, 1,
+				    Customers[CreditScore] < 670, 2,
+				    Customers[CreditScore] < 740, 3,
+				    Customers[CreditScore] < 800, 4,
+				    5
+				)
+			isHidden
+
+		column 'Employment Length' =
+				SWITCH (
+				    TRUE (),
+				    Customers[MonthsEmployed] < 12, "Under 1 yr",
+				    Customers[MonthsEmployed] < 36, "1-3 yrs",
+				    Customers[MonthsEmployed] < 60, "3-5 yrs",
+				    "5+ yrs"
+				)
+			sortByColumn: 'Employment Length Order'
+
+		column 'Employment Length Order' =
+				SWITCH (
+				    TRUE (),
+				    Customers[MonthsEmployed] < 12, 1,
+				    Customers[MonthsEmployed] < 36, 2,
+				    Customers[MonthsEmployed] < 60, 3,
+				    4
+				)
+			isHidden
+
+	ref table Loans
+
+		column 'Interest Rate Band' =
+				SWITCH (
+				    TRUE (),
+				    Loans[InterestRate] < 8, "Low (<8%)",
+				    Loans[InterestRate] < 13, "Moderate (8-13%)",
+				    Loans[InterestRate] < 18, "High (13-18%)",
+				    "Very High (18%+)"
+				)
+			sortByColumn: 'Interest Rate Band Order'
+
+		column 'Interest Rate Band Order' =
+				SWITCH (
+				    TRUE (),
+				    Loans[InterestRate] < 8, 1,
+				    Loans[InterestRate] < 13, 2,
+				    Loans[InterestRate] < 18, 3,
+				    4
+				)
+			isHidden
+
+		column 'Loan Amount Band' =
+				SWITCH (
+				    TRUE (),
+				    Loans[LoanAmount] < 50000, "Under 50K",
+				    Loans[LoanAmount] < 100000, "50K-100K",
+				    Loans[LoanAmount] < 150000, "100K-150K",
+				    Loans[LoanAmount] < 200000, "150K-200K",
+				    "200K+"
+				)
+			sortByColumn: 'Loan Amount Band Order'
+
+		column 'Loan Amount Band Order' =
+				SWITCH (
+				    TRUE (),
+				    Loans[LoanAmount] < 50000, 1,
+				    Loans[LoanAmount] < 100000, 2,
+				    Loans[LoanAmount] < 150000, 3,
+				    Loans[LoanAmount] < 200000, 4,
+				    5
+				)
+			isHidden
+
+		column 'DTI Band' =
+				SWITCH (
+				    TRUE (),
+				    Loans[DTIRatio] < 0.3, "Low (<0.3)",
+				    Loans[DTIRatio] < 0.5, "Medium (0.3-0.5)",
+				    Loans[DTIRatio] < 0.7, "High (0.5-0.7)",
+				    "Very High (0.7+)"
+				)
+			sortByColumn: 'DTI Band Order'
+
+		column 'DTI Band Order' =
+				SWITCH (
+				    TRUE (),
+				    Loans[DTIRatio] < 0.3, 1,
+				    Loans[DTIRatio] < 0.5, 2,
+				    Loans[DTIRatio] < 0.7, 3,
+				    4
+				)
+			isHidden
+
+		column 'Monthly Payment' =
+				VAR MonthlyRate = Loans[InterestRate] / 100 / 12
+				VAR Months = Loans[LoanTerm]
+				RETURN
+				    IF (
+				        ISBLANK ( Months ),
+				        BLANK (),
+				        Loans[LoanAmount] * MonthlyRate / ( 1 - ( 1 + MonthlyRate ) ^ ( -Months ) )
+				    )
+
+		column 'Loan to Income' =
+				DIVIDE ( Loans[LoanAmount], RELATED ( Customers[Income] ) )
+
+		column 'Payment to Income' =
+				DIVIDE ( Loans[Monthly Payment], RELATED ( Customers[Income] ) / 12 )
+
+		measure 'Total Loans' =
+				COUNTROWS ( Loans )
+			formatString: #,0
+			displayFolder: Volume
+
+		measure 'Total Customers' =
+				DISTINCTCOUNT ( Loans[CustomerID] )
+			formatString: #,0
+			displayFolder: Volume
+
+		measure 'Defaulted Loans' =
+				CALCULATE ( COUNTROWS ( Loans ), Loans[LoanStatus] = "Default" )
+			formatString: #,0
+			displayFolder: Volume
+
+		measure 'Non-Default Loans' =
+				[Total Loans] - [Defaulted Loans]
+			formatString: #,0
+			displayFolder: Volume
+
+		measure 'Default Rate' =
+				DIVIDE ( [Defaulted Loans], [Total Loans] )
+			formatString: 0.00%
+			displayFolder: Default rate
+
+		measure 'Overall Default Rate' =
+				CALCULATE ( [Default Rate], REMOVEFILTERS () )
+			formatString: 0.00%
+			displayFolder: Default rate
+
+		measure 'Default Rate vs Overall' =
+				[Default Rate] - [Overall Default Rate]
+			formatString: 0.00%
+			displayFolder: Default rate
+
+		measure 'Risk Index' =
+				DIVIDE ( [Default Rate], [Overall Default Rate] )
+			formatString: 0.00
+			displayFolder: Default rate
+
+		measure 'Total Loan Amount' =
+				SUM ( Loans[LoanAmount] )
+			formatString: #,0
+			displayFolder: Money
+
+		measure 'Avg Loan Amount' =
+				AVERAGE ( Loans[LoanAmount] )
+			formatString: #,0
+			displayFolder: Money
+
+		measure 'Defaulted Amount' =
+				CALCULATE ( SUM ( Loans[LoanAmount] ), Loans[LoanStatus] = "Default" )
+			formatString: #,0
+			displayFolder: Money
+
+		measure 'Default Rate by Amount' =
+				DIVIDE ( [Defaulted Amount], [Total Loan Amount] )
+			formatString: 0.00%
+			displayFolder: Money
+
+		measure 'Avg Interest Rate' =
+				AVERAGE ( Loans[InterestRate] )
+			formatString: 0.00
+			displayFolder: Borrower profile
+
+		measure 'Avg Credit Score' =
+				AVERAGEX ( Loans, RELATED ( Customers[CreditScore] ) )
+			formatString: #,0
+			displayFolder: Borrower profile
+
+		measure 'Avg Income' =
+				AVERAGEX ( Loans, RELATED ( Customers[Income] ) )
+			formatString: #,0
+			displayFolder: Borrower profile
+
+		measure 'Avg DTI Ratio' =
+				AVERAGE ( Loans[DTIRatio] )
+			formatString: 0.000
+			displayFolder: Borrower profile
+
+		measure 'Default Rate PY' =
+				CALCULATE ( [Default Rate], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+			formatString: 0.00%
+			displayFolder: Time intelligence
+
+		measure 'Default Rate YoY Change' =
+				VAR PriorYear = [Default Rate PY]
+				RETURN
+				    IF ( HASONEVALUE ( 'Date'[Year] ) && NOT ISBLANK ( PriorYear ), [Default Rate] - PriorYear )
+			formatString: 0.00%
+			displayFolder: Time intelligence
+
+		measure 'Default Rate vs Prior Year' =
+				VAR Change = [Default Rate YoY Change]
+				RETURN
+				    IF (
+				        ISBLANK ( Change ),
+				        "Pick one year (2020-2024)",
+				        FORMAT ( Change, "+0.00%;-0.00%" ) & " vs " & ( SELECTEDVALUE ( 'Date'[Year] ) - 1 )
+				    )
+			displayFolder: Time intelligence
+
+		measure 'Total Loans PY' =
+				CALCULATE ( [Total Loans], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+			formatString: #,0
+			displayFolder: Time intelligence
+
+		measure 'Loan Growth YoY %' =
+				DIVIDE ( [Total Loans] - [Total Loans PY], [Total Loans PY] )
+			formatString: 0.0%
+			displayFolder: Time intelligence
+
+		measure 'Default Rate 12M Rolling' =
+				CALCULATE (
+				    [Default Rate],
+				    DATESINPERIOD ( 'Date'[Date], MAX ( 'Date'[Date] ), -12, MONTH )
+				)
+			formatString: 0.00%
+			displayFolder: Time intelligence
+
+		measure 'Imputed Income Count' =
+				CALCULATE ( COUNTROWS ( Customers ), Customers[IncomeImputed] = TRUE () )
+			formatString: #,0
+			displayFolder: Data quality
+
+		measure 'Imputed Interest Rate Count' =
+				CALCULATE ( COUNTROWS ( Loans ), Loans[InterestRateImputed] = TRUE () )
+			formatString: #,0
+			displayFolder: Data quality
+
+		measure 'Unknown Age Count' =
+				CALCULATE ( COUNTROWS ( Customers ), ISBLANK ( Customers[Age] ) )
+			formatString: #,0
+			displayFolder: Data quality
+
+		measure 'Unknown Credit Score Count' =
+				CALCULATE ( COUNTROWS ( Customers ), ISBLANK ( Customers[CreditScore] ) )
+			formatString: #,0
+			displayFolder: Data quality
+
+		measure 'Unknown Loan Term Count' =
+				CALCULATE ( COUNTROWS ( Loans ), ISBLANK ( Loans[LoanTerm] ) )
+			formatString: #,0
+			displayFolder: Data quality
+
+		measure 'Default Rate Headline' =
+				"Default rate: " & FORMAT ( [Default Rate], "0.00%" )
+				    & " (" & FORMAT ( [Defaulted Loans], "#,0" ) & " of " & FORMAT ( [Total Loans], "#,0" ) & " loans)"
+			displayFolder: Dynamic titles

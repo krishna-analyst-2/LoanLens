@@ -85,7 +85,17 @@ CALCULATE ( [Default Rate], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
 Default Rate YoY Change =
 VAR PriorYear = [Default Rate PY]
 RETURN
-    IF ( NOT ISBLANK ( PriorYear ), [Default Rate] - PriorYear )
+    IF ( HASONEVALUE ( 'Date'[Year] ) && NOT ISBLANK ( PriorYear ), [Default Rate] - PriorYear )
+
+// Text, for the card on the Trends page (shows a hint when no single year is selected)
+Default Rate vs Prior Year =
+VAR Change = [Default Rate YoY Change]
+RETURN
+    IF (
+        ISBLANK ( Change ),
+        "Pick one year (2020-2024)",
+        FORMAT ( Change, "+0.00%;-0.00%" ) & " vs " & ( SELECTEDVALUE ( 'Date'[Year] ) - 1 )
+    )
 
 // Whole number
 Total Loans PY =

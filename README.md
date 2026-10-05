@@ -27,6 +27,10 @@ powerquery/          M scripts for the Customers and Loans queries
 dax/                 date table, calculated columns, measures
 theme/               Power BI colour theme
 docs/                step-by-step guides and the insights report
+LoanLens.pbip        Power BI project (open this in Power BI Desktop)
+LoanLens.SemanticModel/  data model as TMDL (queries, tables, relationships, measures)
+LoanLens.Report/     report pages and visuals (PBIR format)
+tools/build_report.py  regenerates the report pages in LoanLens.Report
 ```
 
 ## Getting started
@@ -55,9 +59,18 @@ python -m pytest                # run the tests
 
 `python -m loanlens prepare` and `python -m loanlens clean` run the two steps on their own.
 
-### 3. Build the report
+### 3. Open the finished report
 
-Follow the guides in order:
+Open `LoanLens.pbip` (or `LoanLens.pbix`) in Power BI Desktop and click **Refresh**. If the
+project folder isn't `C:\krishna\College\intership\euron_1`, change the `DataFolder`
+parameter first (**Transform data > Edit parameters**).
+
+To rebuild the pages after changing the layout, close Power BI Desktop and run
+`python tools/build_report.py`.
+
+### 4. Build it yourself
+
+To build the report by hand, follow the guides in order:
 
 1. [Data dictionary](docs/01_Data_Dictionary.md)
 2. [Power Query cleaning](docs/02_Power_Query_Cleaning_Guide.md)

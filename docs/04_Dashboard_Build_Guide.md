@@ -50,7 +50,7 @@ with a background colour rule on Risk Index (red above 1, green below 1).
 | Line chart | X `Date[Year Month]`, Y Default Rate and Default Rate 12M Rolling | Monthly values are noisy, the rolling line smooths them |
 | Column chart | X `Date[Year]`, Y Total Loans, tooltip Loan Growth YoY % | Volume grows every year except 2020 |
 | Line chart | X `Date[Year]`, Y Default Rate, legend `Customers[Age Group]` | Shows the age gap stays the same over time |
-| Card | Default Rate YoY Change | Pick a year in the slicer to compare it with the year before |
+| Card | Default Rate vs Prior Year | Text version of Default Rate YoY Change. Pick a year in the slicer to compare it with the year before |
 | Text box | Note that IssueDate is synthetic, so the flat default rate is expected | |
 
 ## Page 4: Borrower Profile
@@ -90,6 +90,19 @@ with a background colour rule on Risk Index (red above 1, green below 1).
 - [ ] A reset button that clears all slicers (bookmark + button)
 - [ ] Alt text on every visual (**Format > General > Alt text**)
 - [ ] Performance Analyzer: every visual loads in under a second (NFR3)
+
+## Performance results (NFR3)
+
+Recorded with Performance Analyzer in Power BI Desktop on all five report pages (export saved as
+`docs/performance_analyzer.json`):
+
+| Step | Events | Slowest | Average |
+|---|---:|---:|---:|
+| DAX query | 35 | 584 ms | 169 ms |
+| Visual render | 72 | 619 ms | 249 ms |
+
+Every visual loads in under a second. The larger totals in the Performance Analyzer pane (around
+1 s) are mostly "Other", which is time a visual spends waiting for the visuals before it.
 
 ## Export
 

@@ -1,0 +1,8 @@
+relationship AutoDetected_7d6065e1-d7b0-4f0f-a218-3ff2b1558f10
+	fromColumn: Loans.CustomerID
+	toColumn: Customers.CustomerID
+
+relationship e5b7eb9e-254c-a0dc-f37a-5e2e3b67b836
+	fromColumn: Loans.IssueDate
+	toColumn: Date.Date
+

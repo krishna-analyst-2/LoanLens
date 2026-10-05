@@ -97,7 +97,7 @@ The most important measures:
 | Risk Index | Segment rate compared with the average (1.0 = average) | Ratio of the two above |
 | Defaulted Amount | Money in defaulted loans | `CALCULATE` + `SUM` |
 | Avg Credit Score | Average score of the borrowers behind the loans | `AVERAGEX` + `RELATED` |
-| Default Rate PY, YoY Change | Change against the previous year | `SAMEPERIODLASTYEAR` |
+| Default Rate PY, YoY Change, vs Prior Year | Change against the previous year (vs Prior Year is the text for the card) | `SAMEPERIODLASTYEAR`, `HASONEVALUE` |
 | Default Rate 12M Rolling | Smoothed trend line | `DATESINPERIOD` |
 | Imputed / Unknown counts | How much data had to be repaired | Used on the Data Quality page |
 

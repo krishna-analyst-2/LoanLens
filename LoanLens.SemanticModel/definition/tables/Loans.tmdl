@@ -1,0 +1,431 @@
+table Loans
+	lineageTag: ce0b5f26-4092-4117-b536-54c5bf2e0b36
+
+	measure 'Total Loans' = COUNTROWS ( Loans )
+		formatString: #,0
+		displayFolder: Volume
+		lineageTag: b37b622e-c01c-4285-a184-06c00894d07c
+
+	measure 'Total Customers' = DISTINCTCOUNT ( Loans[CustomerID] )
+		formatString: #,0
+		displayFolder: Volume
+		lineageTag: 126aa82f-12e1-4464-aa7d-a1b509b23f9b
+
+	measure 'Defaulted Loans' = CALCULATE ( COUNTROWS ( Loans ), Loans[LoanStatus] = "Default" )
+		formatString: #,0
+		displayFolder: Volume
+		lineageTag: d774b0a3-bf6a-4774-9db1-a0acd5991c19
+
+	measure 'Non-Default Loans' = [Total Loans] - [Defaulted Loans]
+		formatString: #,0
+		displayFolder: Volume
+		lineageTag: 687a3a14-abeb-41d6-aba4-a48696eab8e2
+
+	measure 'Default Rate' = DIVIDE ( [Defaulted Loans], [Total Loans] )
+		formatString: 0.00%
+		displayFolder: Default rate
+		lineageTag: 96713a76-5a67-4036-b72c-403436d8df8f
+
+	measure 'Overall Default Rate' = CALCULATE ( [Default Rate], REMOVEFILTERS () )
+		formatString: 0.00%
+		displayFolder: Default rate
+		lineageTag: 960a00bf-179b-4b00-887a-fe3968f6d751
+
+	measure 'Default Rate vs Overall' = [Default Rate] - [Overall Default Rate]
+		formatString: 0.00%
+		displayFolder: Default rate
+		lineageTag: 938452a8-a0f8-47fd-be0b-651e349a34d4
+
+	measure 'Risk Index' = DIVIDE ( [Default Rate], [Overall Default Rate] )
+		formatString: 0.00
+		displayFolder: Default rate
+		lineageTag: 81672276-47c8-447d-9a04-bcac01a192a4
+
+	measure 'Total Loan Amount' = SUM ( Loans[LoanAmount] )
+		formatString: #,0
+		displayFolder: Money
+		lineageTag: 7a409079-3d06-4885-9124-55edfbbb0ff1
+
+	measure 'Avg Loan Amount' = AVERAGE ( Loans[LoanAmount] )
+		formatString: #,0
+		displayFolder: Money
+		lineageTag: 18a75d20-fd27-4312-b593-bf7ce6784ff7
+
+	measure 'Defaulted Amount' = CALCULATE ( SUM ( Loans[LoanAmount] ), Loans[LoanStatus] = "Default" )
+		formatString: #,0
+		displayFolder: Money
+		lineageTag: 9bddb880-f1cc-42b4-8cc9-7a1751d26b62
+
+	measure 'Default Rate by Amount' = DIVIDE ( [Defaulted Amount], [Total Loan Amount] )
+		formatString: 0.00%
+		displayFolder: Money
+		lineageTag: 59a854ae-dee8-4381-9cc6-05debe5d3e0a
+
+	measure 'Avg Interest Rate' = AVERAGE ( Loans[InterestRate] )
+		formatString: 0.00
+		displayFolder: Borrower profile
+		lineageTag: f05b15a4-76e5-463c-861b-18769567094f
+
+	measure 'Avg Credit Score' = AVERAGEX ( Loans, RELATED ( Customers[CreditScore] ) )
+		formatString: #,0
+		displayFolder: Borrower profile
+		lineageTag: 541a8334-4bac-4d2b-a85b-ef26fc32c6f5
+
+	measure 'Avg Income' = AVERAGEX ( Loans, RELATED ( Customers[Income] ) )
+		formatString: #,0
+		displayFolder: Borrower profile
+		lineageTag: 23aeb577-0ea1-4d03-85de-e46c3741b2a8
+
+	measure 'Avg DTI Ratio' = AVERAGE ( Loans[DTIRatio] )
+		formatString: 0.000
+		displayFolder: Borrower profile
+		lineageTag: 4f742166-7356-48bc-b88f-e826b5b79761
+
+	measure 'Default Rate PY' = CALCULATE ( [Default Rate], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+		formatString: 0.00%
+		displayFolder: Time intelligence
+		lineageTag: 9d2df16b-f02d-42ef-87a7-46f893f3db3a
+
+	measure 'Default Rate YoY Change' =
+			VAR PriorYear = [Default Rate PY]
+			RETURN
+			    IF ( HASONEVALUE ( 'Date'[Year] ) && NOT ISBLANK ( PriorYear ), [Default Rate] - PriorYear )
+		formatString: 0.00%
+		displayFolder: Time intelligence
+		lineageTag: 1644c5c1-8b1c-4423-9ff4-6381e2a4c202
+
+	measure 'Total Loans PY' = CALCULATE ( [Total Loans], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+		formatString: #,0
+		displayFolder: Time intelligence
+		lineageTag: 411593bb-fc6c-4c2e-bb7d-d3f97166bfb4
+
+	measure 'Loan Growth YoY %' = DIVIDE ( [Total Loans] - [Total Loans PY], [Total Loans PY] )
+		formatString: 0.0%
+		displayFolder: Time intelligence
+		lineageTag: e1ea2773-527d-494a-b6a0-e124aa0c2167
+
+	measure 'Default Rate 12M Rolling' =
+			CALCULATE (
+			    [Default Rate],
+			    DATESINPERIOD ( 'Date'[Date], MAX ( 'Date'[Date] ), -12, MONTH )
+			)
+		formatString: 0.00%
+		displayFolder: Time intelligence
+		lineageTag: 51c89442-fb45-4a1c-886d-89e3bc87172a
+
+	measure 'Imputed Income Count' = CALCULATE ( COUNTROWS ( Customers ), Customers[IncomeImputed] = TRUE () )
+		formatString: #,0
+		displayFolder: Data quality
+		lineageTag: 46738b7c-ba15-46d6-b4dc-1999c361be76
+
+	measure 'Imputed Interest Rate Count' = CALCULATE ( COUNTROWS ( Loans ), Loans[InterestRateImputed] = TRUE () )
+		formatString: #,0
+		displayFolder: Data quality
+		lineageTag: 32352023-7688-4981-962e-cea5fb5de1da
+
+	measure 'Unknown Age Count' = CALCULATE ( COUNTROWS ( Customers ), ISBLANK ( Customers[Age] ) )
+		formatString: #,0
+		displayFolder: Data quality
+		lineageTag: 34ac8e8a-c7cf-4e22-8f5c-9b72c038c1df
+
+	measure 'Unknown Credit Score Count' = CALCULATE ( COUNTROWS ( Customers ), ISBLANK ( Customers[CreditScore] ) )
+		formatString: #,0
+		displayFolder: Data quality
+		lineageTag: d86d1149-dc27-435c-86d9-176a6b66a7e2
+
+	measure 'Unknown Loan Term Count' = CALCULATE ( COUNTROWS ( Loans ), ISBLANK ( Loans[LoanTerm] ) )
+		formatString: #,0
+		displayFolder: Data quality
+		lineageTag: a025093a-b6ac-45e1-80d2-d7d30b0d194c
+
+	measure 'Default Rate Headline' =
+			"Default rate: " & FORMAT ( [Default Rate], "0.00%" )
+			    & " (" & FORMAT ( [Defaulted Loans], "#,0" ) & " of " & FORMAT ( [Total Loans], "#,0" ) & " loans)"
+		displayFolder: Dynamic titles
+		lineageTag: 3cdf3bcc-33d1-46db-b24e-fe9c32cae062
+
+	measure 'Default Rate vs Prior Year' =
+			VAR Change = [Default Rate YoY Change]
+			RETURN
+			    IF (
+			        ISBLANK ( Change ),
+			        "Pick one year (2020-2024)",
+			        FORMAT ( Change, "+0.00%;-0.00%" ) & " vs " & ( SELECTEDVALUE ( 'Date'[Year] ) - 1 )
+			    )
+		displayFolder: Time intelligence
+
+	column LoanID
+		dataType: string
+		lineageTag: c0dc4fda-b897-46d8-bcd9-c76e1489283f
+		summarizeBy: none
+		sourceColumn: LoanID
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerID
+		dataType: string
+		lineageTag: 925a11f1-8c23-4c81-bc75-a99785f7da64
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column IssueDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 0d1aac88-7b7f-4693-9bb1-068a426af717
+		summarizeBy: none
+		sourceColumn: IssueDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column LoanAmount
+		dataType: int64
+		formatString: #,0
+		lineageTag: ce65a6c8-c435-411f-9ffe-e1cc5dc36f59
+		summarizeBy: sum
+		sourceColumn: LoanAmount
+
+		annotation SummarizationSetBy = Automatic
+
+	column InterestRate
+		dataType: double
+		lineageTag: 693968d1-0a73-4c38-bb25-507e698a0c0c
+		summarizeBy: sum
+		sourceColumn: InterestRate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column InterestRateImputed
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 7455f24f-0b47-4d2b-974f-851eba524488
+		summarizeBy: none
+		sourceColumn: InterestRateImputed
+
+		annotation SummarizationSetBy = Automatic
+
+	column LoanTerm
+		dataType: int64
+		formatString: 0
+		lineageTag: a787dc65-5df3-4b4e-a50e-190166f223c4
+		summarizeBy: sum
+		sourceColumn: LoanTerm
+
+		annotation SummarizationSetBy = Automatic
+
+	column DTIRatio
+		dataType: double
+		lineageTag: 1eb6b543-575f-4c2e-91fc-a33506f91b3d
+		summarizeBy: sum
+		sourceColumn: DTIRatio
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column LoanPurpose
+		dataType: string
+		lineageTag: 688af7e3-63ff-4fc4-ad13-973add903101
+		summarizeBy: none
+		sourceColumn: LoanPurpose
+
+		annotation SummarizationSetBy = Automatic
+
+	column HasCoSigner
+		dataType: string
+		lineageTag: 75556201-f021-41ce-994e-e32752edc7b3
+		summarizeBy: none
+		sourceColumn: HasCoSigner
+
+		annotation SummarizationSetBy = Automatic
+
+	column Default
+		dataType: int64
+		formatString: 0
+		lineageTag: 962fa82c-ebd0-4257-9223-45179ec89010
+		summarizeBy: sum
+		sourceColumn: Default
+
+		annotation SummarizationSetBy = Automatic
+
+	column LoanStatus
+		dataType: string
+		lineageTag: 0add2a5f-1bb0-4de4-be91-fd77008e5a96
+		summarizeBy: none
+		sourceColumn: LoanStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Interest Rate Band' =
+			SWITCH (
+			    TRUE (),
+			    Loans[InterestRate] < 8, "Low (<8%)",
+			    Loans[InterestRate] < 13, "Moderate (8-13%)",
+			    Loans[InterestRate] < 18, "High (13-18%)",
+			    "Very High (18%+)"
+			)
+		lineageTag: 5c2ac453-423b-486f-9073-a88592afdc09
+		sortByColumn: 'Interest Rate Band Order'
+
+	column 'Interest Rate Band Order' =
+			SWITCH (
+			    TRUE (),
+			    Loans[InterestRate] < 8, 1,
+			    Loans[InterestRate] < 13, 2,
+			    Loans[InterestRate] < 18, 3,
+			    4
+			)
+		isHidden
+		lineageTag: 26aaea8c-9a58-4589-b5b3-df2106a175fb
+
+	column 'Loan Amount Band' =
+			SWITCH (
+			    TRUE (),
+			    Loans[LoanAmount] < 50000, "Under 50K",
+			    Loans[LoanAmount] < 100000, "50K-100K",
+			    Loans[LoanAmount] < 150000, "100K-150K",
+			    Loans[LoanAmount] < 200000, "150K-200K",
+			    "200K+"
+			)
+		lineageTag: b7ca8e08-41d4-4e47-989c-edc1971acda0
+		sortByColumn: 'Loan Amount Band Order'
+
+	column 'Loan Amount Band Order' =
+			SWITCH (
+			    TRUE (),
+			    Loans[LoanAmount] < 50000, 1,
+			    Loans[LoanAmount] < 100000, 2,
+			    Loans[LoanAmount] < 150000, 3,
+			    Loans[LoanAmount] < 200000, 4,
+			    5
+			)
+		isHidden
+		lineageTag: 618732a3-12d0-4877-9a0f-e6791ca1200d
+
+	column 'DTI Band' =
+			SWITCH (
+			    TRUE (),
+			    Loans[DTIRatio] < 0.3, "Low (<0.3)",
+			    Loans[DTIRatio] < 0.5, "Medium (0.3-0.5)",
+			    Loans[DTIRatio] < 0.7, "High (0.5-0.7)",
+			    "Very High (0.7+)"
+			)
+		lineageTag: 8562c6f3-a5a0-4cfb-8695-24496e1a9e72
+		sortByColumn: 'DTI Band Order'
+
+	column 'DTI Band Order' =
+			SWITCH (
+			    TRUE (),
+			    Loans[DTIRatio] < 0.3, 1,
+			    Loans[DTIRatio] < 0.5, 2,
+			    Loans[DTIRatio] < 0.7, 3,
+			    4
+			)
+		isHidden
+		lineageTag: 50407133-2946-4158-a2b2-f942201545d8
+
+	column 'Monthly Payment' =
+			VAR MonthlyRate = Loans[InterestRate] / 100 / 12
+			VAR Months = Loans[LoanTerm]
+			RETURN
+			    IF (
+			        ISBLANK ( Months ),
+			        BLANK (),
+			        Loans[LoanAmount] * MonthlyRate / ( 1 - ( 1 + MonthlyRate ) ^ ( -Months ) )
+			    )
+		formatString: #,0.00
+		lineageTag: b6970a13-3522-4315-b753-fd73d29417c4
+
+	column 'Loan to Income' = DIVIDE ( Loans[LoanAmount], RELATED ( Customers[Income] ) )
+		lineageTag: 0f9fb7d7-72ed-449e-8a97-082a3fc4c503
+
+	column 'Payment to Income' = DIVIDE ( Loans[Monthly Payment], RELATED ( Customers[Income] ) / 12 )
+		lineageTag: b581e02b-69ec-48cb-af17-f099ee1dde9a
+
+	partition Loans = m
+		mode: import
+		source =
+				// LoanLens - Loans query (fact table, one row per loan)
+				// Paste into: Home > Transform data > New Source > Blank Query > Advanced Editor
+				// Rename the query to: Loans
+				// Needs the DataFolder parameter (see 00_DataFolder_parameter.m)
+				
+				let
+				    // Import
+				    Source = Csv.Document(
+				        File.Contents(DataFolder & "loans_raw.csv"),
+				        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+				    ),
+				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				
+				    // Text hygiene: trim spaces, empty text -> null
+				    TrimmedText = Table.TransformColumns(PromotedHeaders, {}, each if _ is text then Text.Trim(_) else _),
+				    BlanksToNull = Table.ReplaceValue(TrimmedText, "", null, Replacer.ReplaceValue, Table.ColumnNames(TrimmedText)),
+				
+				    // Remove duplicate rows
+				    RemovedDuplicates = Table.Distinct(BlanksToNull),
+				
+				    // Fix formats and standardize categories
+				    PurposeMap = [auto = "Auto", business = "Business", education = "Education", home = "Home", other = "Other"],
+				    ToYesNo = (value as nullable text) as text =>
+				        if value = null then "Unknown"
+				        else if List.Contains({"yes", "y", "true", "1"}, Text.Lower(value)) then "Yes"
+				        else if List.Contains({"no", "n", "false", "0"}, Text.Lower(value)) then "No"
+				        else "Unknown",
+				    ToDefaultFlag = (value as nullable text) as nullable number =>
+				        if value = null then null
+				        else if List.Contains({"1", "yes", "y", "true"}, Text.Lower(value)) then 1
+				        else if List.Contains({"0", "no", "n", "false"}, Text.Lower(value)) then 0
+				        else null,
+				    // Dates arrive as yyyy-MM-dd or dd/MM/yyyy
+				    ParseDate = (value as nullable text) as nullable date =>
+				        if value = null then null
+				        else try Date.FromText(value, [Format = "yyyy-MM-dd", Culture = "en-US"])
+				             otherwise try Date.FromText(value, [Format = "dd/MM/yyyy", Culture = "en-US"])
+				             otherwise null,
+				
+				    CleanedText = Table.TransformColumns(RemovedDuplicates, {
+				        {"InterestRate", each if _ = null then null else Number.FromText(Text.Remove(_, "%"), "en-US"), type nullable number},
+				        {"LoanPurpose", each if _ = null then "Unknown" else Record.FieldOrDefault(PurposeMap, Text.Lower(_), "Unknown"), type text},
+				        {"HasCoSigner", ToYesNo, type text},
+				        {"Default", ToDefaultFlag, Int64.Type},
+				        {"IssueDate", ParseDate, type date}
+				    }),
+				
+				    // Data types
+				    ChangedTypes = Table.TransformColumnTypes(CleanedText, {
+				        {"LoanID", type text},
+				        {"CustomerID", type text},
+				        {"LoanAmount", Int64.Type},
+				        {"LoanTerm", Int64.Type},
+				        {"DTIRatio", type number}
+				    }, "en-US"),
+				
+				    // Impossible loan terms -> null
+				    FixedLoanTerm = Table.TransformColumns(ChangedTypes, {
+				        {"LoanTerm", each if List.Contains({12, 24, 36, 48, 60}, _) then _ else null, Int64.Type}
+				    }),
+				
+				    // Missing InterestRate -> median rate (and flag it)
+				    MedianRate = List.Median(List.RemoveNulls(FixedLoanTerm[InterestRate])),
+				    FlaggedRate = Table.AddColumn(FixedLoanTerm, "InterestRateImputed", each [InterestRate] = null, type logical),
+				    ImputedRate = Table.ReplaceValue(FlaggedRate, null, MedianRate, Replacer.ReplaceValue, {"InterestRate"}),
+				
+				    // Readable status column (used by the Default Rate measure)
+				    AddedStatus = Table.AddColumn(ImputedRate, "LoanStatus", each if [Default] = 1 then "Default" else "Non-Default", type text),
+				
+				    // Final column order
+				    Result = Table.SelectColumns(AddedStatus, {
+				        "LoanID", "CustomerID", "IssueDate", "LoanAmount", "InterestRate", "InterestRateImputed",
+				        "LoanTerm", "DTIRatio", "LoanPurpose", "HasCoSigner", "Default", "LoanStatus"
+				    })
+				in
+				    Result
+
+	annotation PBI_ResultType = Table
+

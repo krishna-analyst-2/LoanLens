@@ -1,0 +1,294 @@
+table Customers
+	lineageTag: 65b555d8-6757-487c-82fc-ceb83c9a007e
+
+	column CustomerID
+		dataType: string
+		lineageTag: 8a3c8334-7df7-4757-8ab3-98226076e835
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Age
+		dataType: int64
+		formatString: 0
+		lineageTag: ec33ecef-c326-497c-b632-fa03f5c68562
+		summarizeBy: none
+		sourceColumn: Age
+
+		annotation SummarizationSetBy = Automatic
+
+	column Income
+		dataType: double
+		lineageTag: dd6b2624-d035-47ab-8fa0-6ad3389bf4d3
+		summarizeBy: none
+		sourceColumn: Income
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column IncomeImputed
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 65752fc4-0c75-4a03-8fa5-6ff9d1b9749a
+		summarizeBy: none
+		sourceColumn: IncomeImputed
+
+		annotation SummarizationSetBy = Automatic
+
+	column CreditScore
+		dataType: int64
+		formatString: 0
+		lineageTag: f0c72697-bd16-482a-ba21-3b3ed895ca0b
+		summarizeBy: none
+		sourceColumn: CreditScore
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthsEmployed
+		dataType: int64
+		formatString: 0
+		lineageTag: 04736ab1-9e36-4266-b3d2-2955af138f6d
+		summarizeBy: none
+		sourceColumn: MonthsEmployed
+
+		annotation SummarizationSetBy = Automatic
+
+	column NumCreditLines
+		dataType: int64
+		formatString: 0
+		lineageTag: 5114f583-0eeb-41cb-a528-7bb98057185a
+		summarizeBy: none
+		sourceColumn: NumCreditLines
+
+		annotation SummarizationSetBy = Automatic
+
+	column Education
+		dataType: string
+		lineageTag: d75b2469-0b62-4d32-9bd9-f8415da31b38
+		summarizeBy: none
+		sourceColumn: Education
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmploymentType
+		dataType: string
+		lineageTag: db5f09e9-01ff-4efd-b830-ef7b80630b84
+		summarizeBy: none
+		sourceColumn: EmploymentType
+
+		annotation SummarizationSetBy = Automatic
+
+	column MaritalStatus
+		dataType: string
+		lineageTag: 59f58c3e-87b7-430d-910c-0e2148245876
+		summarizeBy: none
+		sourceColumn: MaritalStatus
+
+		annotation SummarizationSetBy = Automatic
+
+	column HasMortgage
+		dataType: string
+		lineageTag: 7ffa9612-7c1f-457d-b375-275a1b66265e
+		summarizeBy: none
+		sourceColumn: HasMortgage
+
+		annotation SummarizationSetBy = Automatic
+
+	column HasDependents
+		dataType: string
+		lineageTag: 6fae5986-85aa-4fd0-88fe-9f1476568b69
+		summarizeBy: none
+		sourceColumn: HasDependents
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Age Group' =
+			
+			SWITCH (
+			    TRUE (),
+			    ISBLANK ( Customers[Age] ), "Unknown",
+			    Customers[Age] < 26, "18-25",
+			    Customers[Age] < 36, "26-35",
+			    Customers[Age] < 46, "36-45",
+			    Customers[Age] < 56, "46-55",
+			    "56+"
+			)
+		lineageTag: 5e0fd509-4b2a-42f9-a097-20fb008c0db6
+		summarizeBy: none
+		sortByColumn: 'Age Group Order'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Age Group Order' =
+			
+			SWITCH (
+			    TRUE (),
+			    ISBLANK ( Customers[Age] ), 6,
+			    Customers[Age] < 26, 1,
+			    Customers[Age] < 36, 2,
+			    Customers[Age] < 46, 3,
+			    Customers[Age] < 56, 4,
+			    5
+			)
+		isHidden
+		formatString: 0
+		lineageTag: 30a027e5-2605-4dae-9628-d54e7e0b35b7
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Income Band' =
+			SWITCH (
+			    TRUE (),
+			    Customers[Income] < 40000, "Under 40K",
+			    Customers[Income] < 70000, "40K-70K",
+			    Customers[Income] < 100000, "70K-100K",
+			    "100K+"
+			)
+		lineageTag: 8fc6327a-3ccc-4b4c-b128-490da579ba4a
+		sortByColumn: 'Income Band Order'
+
+	column 'Income Band Order' =
+			SWITCH (
+			    TRUE (),
+			    Customers[Income] < 40000, 1,
+			    Customers[Income] < 70000, 2,
+			    Customers[Income] < 100000, 3,
+			    4
+			)
+		isHidden
+		lineageTag: a5c1dbe2-f7f7-4231-b12b-547c01dc705f
+
+	column 'Credit Score Band' =
+			SWITCH (
+			    TRUE (),
+			    ISBLANK ( Customers[CreditScore] ), "Unknown",
+			    Customers[CreditScore] < 580, "Poor (300-579)",
+			    Customers[CreditScore] < 670, "Fair (580-669)",
+			    Customers[CreditScore] < 740, "Good (670-739)",
+			    Customers[CreditScore] < 800, "Very Good (740-799)",
+			    "Excellent (800-850)"
+			)
+		lineageTag: 4fe4b9f1-8de4-42ce-b1e6-ffca0b8e342d
+		sortByColumn: 'Credit Score Band Order'
+
+	column 'Credit Score Band Order' =
+			SWITCH (
+			    TRUE (),
+			    ISBLANK ( Customers[CreditScore] ), 6,
+			    Customers[CreditScore] < 580, 1,
+			    Customers[CreditScore] < 670, 2,
+			    Customers[CreditScore] < 740, 3,
+			    Customers[CreditScore] < 800, 4,
+			    5
+			)
+		isHidden
+		lineageTag: ab691c30-502d-4b21-801e-7cc4c411f4be
+
+	column 'Employment Length' =
+			SWITCH (
+			    TRUE (),
+			    Customers[MonthsEmployed] < 12, "Under 1 yr",
+			    Customers[MonthsEmployed] < 36, "1-3 yrs",
+			    Customers[MonthsEmployed] < 60, "3-5 yrs",
+			    "5+ yrs"
+			)
+		lineageTag: 9a7a83f5-1a59-4ddf-ae06-f50a445e3cc0
+		sortByColumn: 'Employment Length Order'
+
+	column 'Employment Length Order' =
+			SWITCH (
+			    TRUE (),
+			    Customers[MonthsEmployed] < 12, 1,
+			    Customers[MonthsEmployed] < 36, 2,
+			    Customers[MonthsEmployed] < 60, 3,
+			    4
+			)
+		isHidden
+		lineageTag: 26f92192-5cee-4504-a8f1-49b0e2aa38b6
+
+	partition Customers = m
+		mode: import
+		source =
+				// LoanLens - Customers query (dimension table, one row per borrower)
+				// Paste into: Home > Transform data > New Source > Blank Query > Advanced Editor
+				// Rename the query to: Customers
+				// Needs the DataFolder parameter (see 00_DataFolder_parameter.m)
+				
+				let
+				    // Import
+				    Source = Csv.Document(
+				        File.Contents(DataFolder & "customers_raw.csv"),
+				        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+				    ),
+				    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				
+				    // Text hygiene: trim spaces, empty text -> null
+				    TrimmedText = Table.TransformColumns(PromotedHeaders, {}, each if _ is text then Text.Trim(_) else _),
+				    BlanksToNull = Table.ReplaceValue(TrimmedText, "", null, Replacer.ReplaceValue, Table.ColumnNames(TrimmedText)),
+				
+				    // Remove duplicate rows
+				    RemovedDuplicates = Table.Distinct(BlanksToNull),
+				
+				    // Standardize categories
+				    EmploymentMap = [#"full-time" = "Full-time", #"part-time" = "Part-time", #"self-employed" = "Self-employed", unemployed = "Unemployed"],
+				    EducationMap = [bachelors = "Bachelor's", masters = "Master's", #"high school" = "High School", phd = "PhD"],
+				    MaritalMap = [married = "Married", single = "Single", divorced = "Divorced"],
+				
+				    // Lower-cases the value, optionally reshapes the key, then looks it up; anything unmatched -> "Unknown"
+				    LookUp = (value as nullable text, map as record, optional keyFn as function) as text =>
+				        if value = null then "Unknown"
+				        else Record.FieldOrDefault(
+				            map,
+				            if keyFn = null then Text.Lower(value) else keyFn(Text.Lower(value)),
+				            "Unknown"
+				        ),
+				    ToYesNo = (value as nullable text) as text =>
+				        if value = null then "Unknown"
+				        else if List.Contains({"yes", "y", "true", "1"}, Text.Lower(value)) then "Yes"
+				        else if List.Contains({"no", "n", "false", "0"}, Text.Lower(value)) then "No"
+				        else "Unknown",
+				
+				    StandardizedText = Table.TransformColumns(RemovedDuplicates, {
+				        {"EmploymentType", each LookUp(_, EmploymentMap, (k) => Text.Replace(k, " ", "-")), type text},
+				        {"Education", each LookUp(_, EducationMap, (k) => Text.Remove(k, "'")), type text},
+				        {"MaritalStatus", each LookUp(_, MaritalMap), type text},
+				        {"HasMortgage", ToYesNo, type text},
+				        {"HasDependents", ToYesNo, type text}
+				    }),
+				
+				    // Data types
+				    ChangedTypes = Table.TransformColumnTypes(StandardizedText, {
+				        {"CustomerID", type text},
+				        {"Age", Int64.Type},
+				        {"Income", Int64.Type},
+				        {"CreditScore", Int64.Type},
+				        {"MonthsEmployed", Int64.Type},
+				        {"NumCreditLines", Int64.Type}
+				    }, "en-US"),
+				
+				    // Impossible values -> null
+				    FixedOutliers = Table.TransformColumns(ChangedTypes, {
+				        {"Age", each if _ = null or _ < 18 or _ > 100 then null else _, Int64.Type},
+				        {"CreditScore", each if _ = null or _ < 300 or _ > 850 then null else _, Int64.Type}
+				    }),
+				
+				    // Missing Income -> median income (and flag it)
+				    MedianIncome = Number.Round(List.Median(List.RemoveNulls(FixedOutliers[Income]))),
+				    FlaggedIncome = Table.AddColumn(FixedOutliers, "IncomeImputed", each [Income] = null, type logical),
+				    ImputedIncome = Table.ReplaceValue(FlaggedIncome, null, MedianIncome, Replacer.ReplaceValue, {"Income"}),
+				
+				    // Final column order
+				    Result = Table.SelectColumns(ImputedIncome, {
+				        "CustomerID", "Age", "Income", "IncomeImputed", "CreditScore", "MonthsEmployed",
+				        "NumCreditLines", "Education", "EmploymentType", "MaritalStatus", "HasMortgage", "HasDependents"
+				    })
+				in
+				    Result
+
+	annotation PBI_ResultType = Table
+

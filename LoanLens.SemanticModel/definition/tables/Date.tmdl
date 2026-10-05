@@ -1,0 +1,97 @@
+table Date
+	lineageTag: 3fa2c5bb-509e-4d91-b5c3-7c639de15c18
+	dataCategory: Time
+
+	column Date
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: 6483c9b2-f852-4e8c-bccc-d637e0b6c4d8
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		formatString: 0
+		lineageTag: 4e2f8a45-010f-4600-8a96-e0f3c29efa99
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter
+		lineageTag: 9ad884f3-10a9-4fdf-a81e-b0bc4fe2a16a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Quarter]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Quarter'
+		lineageTag: c627d8f6-eb72-4e01-8086-6c5cc9ca1cc9
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year Quarter]
+		sortByColumn: 'Year Quarter Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Quarter Number'
+		isHidden
+		formatString: 0
+		lineageTag: f6c6b8ed-0572-4ff5-b26d-648a7f1cc085
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year Quarter Number]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number'
+		isHidden
+		formatString: 0
+		lineageTag: 70b1f2b2-514d-4e2c-b4d7-f51b5eef1169
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month Number]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		lineageTag: f76b3b8a-9921-4a18-8180-a9777276f8ec
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month]
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Month'
+		lineageTag: 29bdb2c3-7009-4fa5-aada-be70f6c5820e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year Month]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Date = calculated
+		mode: import
+		source =
+				
+				VAR FirstYear = YEAR ( MIN ( Loans[IssueDate] ) )
+				VAR LastYear  = YEAR ( MAX ( Loans[IssueDate] ) )
+				RETURN
+				    ADDCOLUMNS (
+				        CALENDAR ( DATE ( FirstYear, 1, 1 ), DATE ( LastYear, 12, 31 ) ),
+				        "Year", YEAR ( [Date] ),
+				        "Quarter", "Q" & QUARTER ( [Date] ),
+				        "Year Quarter", YEAR ( [Date] ) & " Q" & QUARTER ( [Date] ),
+				        "Year Quarter Number", YEAR ( [Date] ) * 10 + QUARTER ( [Date] ),
+				        "Month Number", MONTH ( [Date] ),
+				        "Month", FORMAT ( [Date], "MMM" ),
+				        "Year Month", FORMAT ( [Date], "YYYY-MM" )
+				    )
+
+	annotation PBI_Id = 21403536f6bc458fa8cda4d455b73eee
+

@@ -1,0 +1,22 @@
+{
+  "name": "LoanLens",
+  "dataColors": [
+    "#1F4E79",
+    "#C0392B",
+    "#2E86AB",
+    "#E39B2D",
+    "#5B8C5A",
+    "#7D5BA6",
+    "#8C8C8C",
+    "#D9775B"
+  ],
+  "background": "#FFFFFF",
+  "foreground": "#1F2937",
+  "tableAccent": "#1F4E79",
+  "good": "#2E7D32",
+  "neutral": "#E39B2D",
+  "bad": "#C0392B",
+  "minimum": "#EAF2F8",
+  "center": "#F5B7B1",
+  "maximum": "#C0392B"
+}

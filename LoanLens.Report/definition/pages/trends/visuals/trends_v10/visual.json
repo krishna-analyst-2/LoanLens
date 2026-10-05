@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "trends_v10",
+  "position": {
+    "x": 964,
+    "y": 248,
+    "z": 10000,
+    "height": 162,
+    "width": 300,
+    "tabOrder": 10000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "About the dates",
+                    "textStyle": {
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "IssueDate was added synthetically (2019-2024), so a flat default rate over time is expected and should not be read as a real trend. Pick a year in the Year slicer to see its change versus the year before.",
+                    "textStyle": {
+                      "fontSize": "10pt"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Note about synthetic issue dates'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

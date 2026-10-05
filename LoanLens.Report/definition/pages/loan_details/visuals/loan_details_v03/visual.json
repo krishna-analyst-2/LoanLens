@@ -1,0 +1,198 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "loan_details_v03",
+  "position": {
+    "x": 16,
+    "y": 64,
+    "z": 3000,
+    "height": 640,
+    "width": 1248,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Loans"
+                    }
+                  },
+                  "Property": "LoanID"
+                }
+              },
+              "queryRef": "Loans.LoanID",
+              "nativeQueryRef": "LoanID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Loans"
+                    }
+                  },
+                  "Property": "CustomerID"
+                }
+              },
+              "queryRef": "Loans.CustomerID",
+              "nativeQueryRef": "CustomerID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Loans"
+                    }
+                  },
+                  "Property": "IssueDate"
+                }
+              },
+              "queryRef": "Loans.IssueDate",
+              "nativeQueryRef": "IssueDate"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Loans"
+                    }
+                  },
+                  "Property": "LoanAmount"
+                }
+              },
+              "queryRef": "Loans.LoanAmount",
+              "nativeQueryRef": "LoanAmount"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Loans"
+                    }
+                  },
+                  "Property": "InterestRate"
+                }
+              },
+              "queryRef": "Loans.InterestRate",
+              "nativeQueryRef": "InterestRate"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Loans"
+                    }
+                  },
+                  "Property": "LoanTerm"
+                }
+              },
+              "queryRef": "Loans.LoanTerm",
+              "nativeQueryRef": "LoanTerm"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Loans"
+                    }
+                  },
+                  "Property": "Monthly Payment"
+                }
+              },
+              "queryRef": "Loans.Monthly Payment",
+              "nativeQueryRef": "Monthly Payment"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Loans"
+                    }
+                  },
+                  "Property": "Payment to Income"
+                }
+              },
+              "queryRef": "Loans.Payment to Income",
+              "nativeQueryRef": "Payment to Income"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Loans"
+                    }
+                  },
+                  "Property": "LoanStatus"
+                }
+              },
+              "queryRef": "Loans.LoanStatus",
+              "nativeQueryRef": "LoanStatus"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Loans in the selection'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Loans in the selection'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

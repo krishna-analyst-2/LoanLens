@@ -1,0 +1,129 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "name": "data_quality_v13",
+  "position": {
+    "x": 16,
+    "y": 212,
+    "z": 13000,
+    "height": 492,
+    "width": 410,
+    "tabOrder": 13000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Cleaning Summary"
+                    }
+                  },
+                  "Property": "Step"
+                }
+              },
+              "queryRef": "Cleaning Summary.Step",
+              "nativeQueryRef": "Step"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Cleaning Summary"
+                    }
+                  },
+                  "Property": "Customers"
+                }
+              },
+              "queryRef": "Cleaning Summary.Customers",
+              "nativeQueryRef": "Customers"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Cleaning Summary"
+                    }
+                  },
+                  "Property": "Loans"
+                }
+              },
+              "queryRef": "Cleaning Summary.Loans",
+              "nativeQueryRef": "Loans"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Cleaning summary (rows)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Cleaning summary (rows)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
