@@ -1,0 +1,163 @@
+// LoanLens - Calculated columns
+// Select the table in the Data pane > Table tools > New column > paste one column at a time.
+// Each band has an "Order" column: select the band column > Column tools > Sort by column > its Order column.
+// Upper bounds are exclusive (same rules as loanlens/bands.py).
+
+// Customers table
+
+Age Group =
+SWITCH (
+    TRUE (),
+    ISBLANK ( Customers[Age] ), "Unknown",
+    Customers[Age] < 26, "18-25",
+    Customers[Age] < 36, "26-35",
+    Customers[Age] < 46, "36-45",
+    Customers[Age] < 56, "46-55",
+    "56+"
+)
+
+Age Group Order =
+SWITCH (
+    TRUE (),
+    ISBLANK ( Customers[Age] ), 6,
+    Customers[Age] < 26, 1,
+    Customers[Age] < 36, 2,
+    Customers[Age] < 46, 3,
+    Customers[Age] < 56, 4,
+    5
+)
+
+Income Band =
+SWITCH (
+    TRUE (),
+    Customers[Income] < 40000, "Under 40K",
+    Customers[Income] < 70000, "40K-70K",
+    Customers[Income] < 100000, "70K-100K",
+    "100K+"
+)
+
+Income Band Order =
+SWITCH (
+    TRUE (),
+    Customers[Income] < 40000, 1,
+    Customers[Income] < 70000, 2,
+    Customers[Income] < 100000, 3,
+    4
+)
+
+Credit Score Band =
+SWITCH (
+    TRUE (),
+    ISBLANK ( Customers[CreditScore] ), "Unknown",
+    Customers[CreditScore] < 580, "Poor (300-579)",
+    Customers[CreditScore] < 670, "Fair (580-669)",
+    Customers[CreditScore] < 740, "Good (670-739)",
+    Customers[CreditScore] < 800, "Very Good (740-799)",
+    "Excellent (800-850)"
+)
+
+Credit Score Band Order =
+SWITCH (
+    TRUE (),
+    ISBLANK ( Customers[CreditScore] ), 6,
+    Customers[CreditScore] < 580, 1,
+    Customers[CreditScore] < 670, 2,
+    Customers[CreditScore] < 740, 3,
+    Customers[CreditScore] < 800, 4,
+    5
+)
+
+Employment Length =
+SWITCH (
+    TRUE (),
+    Customers[MonthsEmployed] < 12, "Under 1 yr",
+    Customers[MonthsEmployed] < 36, "1-3 yrs",
+    Customers[MonthsEmployed] < 60, "3-5 yrs",
+    "5+ yrs"
+)
+
+Employment Length Order =
+SWITCH (
+    TRUE (),
+    Customers[MonthsEmployed] < 12, 1,
+    Customers[MonthsEmployed] < 36, 2,
+    Customers[MonthsEmployed] < 60, 3,
+    4
+)
+
+// Loans table
+
+Interest Rate Band =
+SWITCH (
+    TRUE (),
+    Loans[InterestRate] < 8, "Low (<8%)",
+    Loans[InterestRate] < 13, "Moderate (8-13%)",
+    Loans[InterestRate] < 18, "High (13-18%)",
+    "Very High (18%+)"
+)
+
+Interest Rate Band Order =
+SWITCH (
+    TRUE (),
+    Loans[InterestRate] < 8, 1,
+    Loans[InterestRate] < 13, 2,
+    Loans[InterestRate] < 18, 3,
+    4
+)
+
+Loan Amount Band =
+SWITCH (
+    TRUE (),
+    Loans[LoanAmount] < 50000, "Under 50K",
+    Loans[LoanAmount] < 100000, "50K-100K",
+    Loans[LoanAmount] < 150000, "100K-150K",
+    Loans[LoanAmount] < 200000, "150K-200K",
+    "200K+"
+)
+
+Loan Amount Band Order =
+SWITCH (
+    TRUE (),
+    Loans[LoanAmount] < 50000, 1,
+    Loans[LoanAmount] < 100000, 2,
+    Loans[LoanAmount] < 150000, 3,
+    Loans[LoanAmount] < 200000, 4,
+    5
+)
+
+DTI Band =
+SWITCH (
+    TRUE (),
+    Loans[DTIRatio] < 0.3, "Low (<0.3)",
+    Loans[DTIRatio] < 0.5, "Medium (0.3-0.5)",
+    Loans[DTIRatio] < 0.7, "High (0.5-0.7)",
+    "Very High (0.7+)"
+)
+
+DTI Band Order =
+SWITCH (
+    TRUE (),
+    Loans[DTIRatio] < 0.3, 1,
+    Loans[DTIRatio] < 0.5, 2,
+    Loans[DTIRatio] < 0.7, 3,
+    4
+)
+
+// Monthly instalment (EMI) using the standard amortization formula
+Monthly Payment =
+VAR MonthlyRate = Loans[InterestRate] / 100 / 12
+VAR Months = Loans[LoanTerm]
+RETURN
+    IF (
+        ISBLANK ( Months ),
+        BLANK (),
+        Loans[LoanAmount] * MonthlyRate / ( 1 - ( 1 + MonthlyRate ) ^ ( -Months ) )
+    )
+
+// Loan size relative to the borrower's annual income
+Loan to Income =
+DIVIDE ( Loans[LoanAmount], RELATED ( Customers[Income] ) )
+
+// Share of monthly income needed for this loan's instalment
+Payment to Income =
+DIVIDE ( Loans[Monthly Payment], RELATED ( Customers[Income] ) / 12 )

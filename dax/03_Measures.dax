@@ -1,0 +1,132 @@
+// LoanLens - Measures
+// Tip: create an empty table to hold them (Home > Enter data > name it "_Measures" > Load),
+// then select it > Table tools > New measure > paste one measure at a time.
+// Suggested format for each measure is in the comment above it.
+
+// Volume
+
+// Whole number, thousands separator
+Total Loans =
+COUNTROWS ( Loans )
+
+// Whole number
+Total Customers =
+DISTINCTCOUNT ( Loans[CustomerID] )
+
+// Whole number
+Defaulted Loans =
+CALCULATE ( COUNTROWS ( Loans ), Loans[LoanStatus] = "Default" )
+
+// Whole number
+Non-Default Loans =
+[Total Loans] - [Defaulted Loans]
+
+// Default rate
+
+// Percentage, 2 decimals (main KPI, same logic as the PRD sample)
+Default Rate =
+DIVIDE ( [Defaulted Loans], [Total Loans] )
+
+// Percentage, 2 decimals - default rate of the whole portfolio, ignores every filter
+Overall Default Rate =
+CALCULATE ( [Default Rate], REMOVEFILTERS () )
+
+// Percentage, 2 decimals - how far the current segment is from the portfolio average
+Default Rate vs Overall =
+[Default Rate] - [Overall Default Rate]
+
+// Decimal, 2 decimals - 1.00 = average risk, 1.50 = 50% more likely to default
+Risk Index =
+DIVIDE ( [Default Rate], [Overall Default Rate] )
+
+// Money
+
+// Currency, 0 decimals (display units: Millions on cards)
+Total Loan Amount =
+SUM ( Loans[LoanAmount] )
+
+// Currency, 0 decimals
+Avg Loan Amount =
+AVERAGE ( Loans[LoanAmount] )
+
+// Currency, 0 decimals - money tied up in loans that defaulted
+Defaulted Amount =
+CALCULATE ( SUM ( Loans[LoanAmount] ), Loans[LoanStatus] = "Default" )
+
+// Percentage, 2 decimals
+Default Rate by Amount =
+DIVIDE ( [Defaulted Amount], [Total Loan Amount] )
+
+// Borrower profile (averaged per loan)
+
+// Decimal, 2 decimals, shown with a % suffix
+Avg Interest Rate =
+AVERAGE ( Loans[InterestRate] )
+
+// Whole number
+Avg Credit Score =
+AVERAGEX ( Loans, RELATED ( Customers[CreditScore] ) )
+
+// Currency, 0 decimals
+Avg Income =
+AVERAGEX ( Loans, RELATED ( Customers[Income] ) )
+
+// Decimal, 3 decimals
+Avg DTI Ratio =
+AVERAGE ( Loans[DTIRatio] )
+
+// Time intelligence (needs the marked Date table)
+
+// Percentage, 2 decimals
+Default Rate PY =
+CALCULATE ( [Default Rate], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+
+// Percentage, 2 decimals (percentage points vs the same period last year)
+Default Rate YoY Change =
+VAR PriorYear = [Default Rate PY]
+RETURN
+    IF ( NOT ISBLANK ( PriorYear ), [Default Rate] - PriorYear )
+
+// Whole number
+Total Loans PY =
+CALCULATE ( [Total Loans], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+
+// Percentage, 1 decimal
+Loan Growth YoY % =
+DIVIDE ( [Total Loans] - [Total Loans PY], [Total Loans PY] )
+
+// Percentage, 2 decimals - smooths the monthly line
+Default Rate 12M Rolling =
+CALCULATE (
+    [Default Rate],
+    DATESINPERIOD ( 'Date'[Date], MAX ( 'Date'[Date] ), -12, MONTH )
+)
+
+// Data quality (for the Data Quality page)
+
+// Whole number
+Imputed Income Count =
+CALCULATE ( COUNTROWS ( Customers ), Customers[IncomeImputed] = TRUE () )
+
+// Whole number
+Imputed Interest Rate Count =
+CALCULATE ( COUNTROWS ( Loans ), Loans[InterestRateImputed] = TRUE () )
+
+// Whole number
+Unknown Age Count =
+CALCULATE ( COUNTROWS ( Customers ), ISBLANK ( Customers[Age] ) )
+
+// Whole number
+Unknown Credit Score Count =
+CALCULATE ( COUNTROWS ( Customers ), ISBLANK ( Customers[CreditScore] ) )
+
+// Whole number
+Unknown Loan Term Count =
+CALCULATE ( COUNTROWS ( Loans ), ISBLANK ( Loans[LoanTerm] ) )
+
+// Dynamic titles
+
+// Text - use as a card or visual title: "Default rate: 11.57% (5,755 of 49,750 loans)"
+Default Rate Headline =
+"Default rate: " & FORMAT ( [Default Rate], "0.00%" )
+    & " (" & FORMAT ( [Defaulted Loans], "#,0" ) & " of " & FORMAT ( [Total Loans], "#,0" ) & " loans)"

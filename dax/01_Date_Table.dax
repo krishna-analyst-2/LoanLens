@@ -1,0 +1,20 @@
+// LoanLens - Date table
+// Modeling > New table > paste the expression below.
+// Then: Table tools > Mark as date table > Date column = 'Date'[Date]
+// Then: Model view > drag 'Date'[Date] onto Loans[IssueDate]  (One-to-many, single direction)
+// Sort 'Date'[Month] by 'Date'[Month Number] and 'Date'[Year Quarter] by 'Date'[Year Quarter Number].
+
+Date =
+VAR FirstYear = YEAR ( MIN ( Loans[IssueDate] ) )
+VAR LastYear  = YEAR ( MAX ( Loans[IssueDate] ) )
+RETURN
+    ADDCOLUMNS (
+        CALENDAR ( DATE ( FirstYear, 1, 1 ), DATE ( LastYear, 12, 31 ) ),
+        "Year", YEAR ( [Date] ),
+        "Quarter", "Q" & QUARTER ( [Date] ),
+        "Year Quarter", YEAR ( [Date] ) & " Q" & QUARTER ( [Date] ),
+        "Year Quarter Number", YEAR ( [Date] ) * 10 + QUARTER ( [Date] ),
+        "Month Number", MONTH ( [Date] ),
+        "Month", FORMAT ( [Date], "MMM" ),
+        "Year Month", FORMAT ( [Date], "YYYY-MM" )
+    )
